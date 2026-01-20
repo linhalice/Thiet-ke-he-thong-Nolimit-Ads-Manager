@@ -1,7 +1,8 @@
 # Cột Liên kết Via-BM trong Bảng Ads
 
-**Trạng thái:** approved
+**Trạng thái:** ✅ DONE - Đã chuyển cho dev team
 **Ngày tạo:** 2026-01-15
+**Ngày hoàn thành:** 2026-01-16
 **Liên quan:** [Issue: Hiển thị tài nguyên khó nắm bắt](../../issues/2026-01-15-hien-thi-tai-nguyen-kho-nam-bat.md)
 
 ---

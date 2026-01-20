@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Liên kết BM - Docs & Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .docs-content h2 { font-size: 1.5rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e5e7eb; }
+        .docs-content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #374151; }
+        .docs-content h4 { font-size: 1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #4b5563; }
+        .docs-content p { margin-bottom: 1rem; line-height: 1.7; }
+        .docs-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .docs-content li { margin-bottom: 0.5rem; }
+        .docs-content pre { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1rem; font-size: 0.875rem; }
+        .docs-content code { font-family: monospace; }
+        .docs-content table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .docs-content th, .docs-content td { border: 1px solid #e5e7eb; padding: 0.5rem 0.75rem; text-align: left; }
+        .docs-content th { background: #f9fafb; font-weight: 600; }
+        .docs-content blockquote { border-left: 4px solid #6366f1; background: #eef2ff; padding: 1rem; margin-bottom: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
+        .docs-content .warning { border-left-color: #f59e0b; background: #fffbeb; }
+        .docs-content .danger { border-left-color: #ef4444; background: #fef2f2; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Fixed Header with Tabs -->
+    <div class="sticky top-0 z-40 bg-white border-b shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Chi tiết Liên kết BM</h1>
+                    <p class="text-sm text-gray-500">Idea: 2026-01-16 | Status: Drafting</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400">View:</span>
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="switchTab('docs')" id="tab-docs" class="px-4 py-2 text-sm font-medium rounded-md transition-all bg-white shadow text-indigo-600">
+                            📄 Docs
+                        </button>
+                        <button onclick="switchTab('demo')" id="tab-demo" class="px-4 py-2 text-sm font-medium rounded-md transition-all text-gray-600 hover:text-gray-800">
+                            🎨 Demo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== DOCS CONTENT ==================== -->
+    <div id="content-docs" class="docs-content max-w-4xl mx-auto px-6 py-8">
+
+        <h2>Bối cảnh</h2>
+        <p>Đã có modal "Chi tiết Liên kết" cho <strong>Ads</strong> - nhìn từ Ads lên trên để thấy BM + Via.</p>
+        <p>Giờ cần tương tự cho <strong>BM</strong> - nhìn từ BM ra xung quanh để thấy:</p>
+        <ul>
+            <li>Via nào đang cầm BM này?</li>
+            <li>BM này sở hữu bao nhiêu Ads?</li>
+            <li>BM này là Gốc hay Trung gian?</li>
+            <li>Ads được sở hữu theo diện nào (owner vs shared)?</li>
+        </ul>
+
+        <h2>Vấn đề cần giải quyết</h2>
+        <table>
+            <tr><th>#</th><th>Vấn đề</th><th>Hậu quả</th></tr>
+            <tr><td>1</td><td>Không biết BM đang được bao nhiêu Via cầm</td><td>Rủi ro nếu tất cả Via die</td></tr>
+            <tr><td>2</td><td>Không biết BM sở hữu bao nhiêu Ads</td><td>Khó đánh giá mức độ quan trọng</td></tr>
+            <tr><td>3</td><td>Không phân biệt được Ads owned vs Ads shared</td><td>Khó hiểu cấu trúc</td></tr>
+            <tr><td>4</td><td>Không thấy được sức khỏe tổng thể của BM</td><td>Khó phát hiện rủi ro</td></tr>
+        </table>
+
+        <h2>Thiết kế Bảng BM</h2>
+        <h3>Cột trong bảng</h3>
+        <table>
+            <tr><th>Cột</th><th>Mô tả</th><th>Format</th></tr>
+            <tr><td><strong>BM Name</strong></td><td>Tên BM</td><td>Text</td></tr>
+            <tr><td><strong>Type</strong></td><td>Loại BM (tự động tính từ tỷ trọng)</td><td>🏠 Gốc / 🔗 TG</td></tr>
+            <tr><td><strong>👤 Via</strong></td><td>Số Via cầm BM</td><td><code>live/total</code> + màu</td></tr>
+            <tr><td><strong>Tổng Ads</strong></td><td>Tổng số Ads trong BM</td><td>Số</td></tr>
+            <tr><td><strong>📊 Ads Gốc</strong></td><td>Ads do BM này sở hữu</td><td><code>tổng (live/die/nợ)</code></td></tr>
+            <tr><td><strong>📊 Ads Share</strong></td><td>Ads được share từ BM khác</td><td><code>tổng (live/die/nợ)</code></td></tr>
+        </table>
+
+        <h3>Format hiển thị Ads</h3>
+        <pre>50 (45/3/2)
+│   │  │ └─ Nợ: 2 ads
+│   │  └─── Die: 3 ads
+│   └────── Live: 45 ads
+└────────── Tổng: 50 ads</pre>
+
+        <h3>Quy tắc màu Via</h3>
+        <table>
+            <tr><th>Via live</th><th>Màu</th><th>Ý nghĩa</th></tr>
+            <tr><td>0</td><td>🔴 Đỏ</td><td>CRITICAL - Mất quyền truy cập BM</td></tr>
+            <tr><td>1</td><td>🟡 Vàng</td><td>WARNING - Chỉ 1 Via, rủi ro cao</td></tr>
+            <tr><td>2+</td><td>🟢 Xanh</td><td>OK - Có backup</td></tr>
+        </table>
+
+        <h2>Admin Matching (Tính năng mới)</h2>
+
+        <h3>Vấn đề</h3>
+        <ul>
+            <li><strong>Via cầm BM</strong>: Sync từ Via → thấy danh sách BM (Via ID)</li>
+            <li><strong>Admin trong BM</strong>: API call từ BM → list admins (Admin ID)</li>
+            <li><strong>2 ID này KHÁC NHAU</strong> - Facebook sinh Admin ID riêng khi user join BM</li>
+        </ul>
+        <p>→ Cần cơ chế <strong>matching</strong> để biết admin nào là Via nào của ta.</p>
+
+        <h3>Trạng thái matching</h3>
+        <table>
+            <tr><th>Status</th><th>Icon</th><th>Mô tả</th></tr>
+            <tr><td>✅ Auto-matched</td><td>🟢</td><td>Hệ thống tự match qua đuôi số trong tên admin</td></tr>
+            <tr><td>🔗 Manual-matched</td><td>🔵</td><td>Đội tài nguyên đã confirm thủ công</td></tr>
+            <tr><td>⚠️ Unmatched</td><td>🟡</td><td>Chưa match được - cần review</td></tr>
+        </table>
+
+        <h3>Gợi ý Via cho Admin Unmatched</h3>
+        <p>Khi admin có số trong tên (ví dụ: <code>"1.12 XMDN 30333"</code>):</p>
+        <pre>┌──────────────────────────────────────────────────────┐
+│ 🔍 Phát hiện số: 30333                               │
+│                                                      │
+│ 📋 Gợi ý Via có đuôi khớp:                          │
+│ ┌────────────────────────────────────────────────┐  │
+│ │ 🟢 100001230333 - Via A (Live)                 │  │
+│ │    └─ Chưa sync BM này → [Yêu cầu đồng bộ]    │  │
+│ ├────────────────────────────────────────────────┤  │
+│ │ 💀 100009930333 - Via B (Die)                  │  │
+│ │    └─ Không thể sync → [Gắn thủ công]         │  │
+│ └────────────────────────────────────────────────┘  │
+│                                                      │
+│ Không phải Via nào ở trên? [Chọn lý do khác ▼]      │
+└──────────────────────────────────────────────────────┘</pre>
+
+        <h3>Hành động theo trạng thái Via</h3>
+        <table>
+            <tr><th>Via Status</th><th>Hành động</th><th>Nút</th></tr>
+            <tr><td>🟢 <strong>Live</strong></td><td>Yêu cầu đội kỹ thuật sync Via → BM</td><td><code>[Đồng bộ]</code></td></tr>
+            <tr><td>💀 <strong>Die</strong></td><td>Via không thể sync nữa → Gắn thủ công</td><td><code>[Gắn thủ công]</code></td></tr>
+            <tr><td>❌ <strong>Không tìm thấy</strong></td><td>Chọn lý do: Via khách, hacker, etc.</td><td><code>[Chọn lý do ▼]</code></td></tr>
+        </table>
+
+        <h3>Lý do cho Admin không match</h3>
+        <table>
+            <tr><th>Lý do</th><th>Mô tả</th></tr>
+            <tr><td>📦 Via thất lạc</td><td>Via của ta nhưng chưa link được</td></tr>
+            <tr><td>🔄 Chưa đồng bộ</td><td>Via mới, chưa sync vào hệ thống</td></tr>
+            <tr><td>👤 Via của khách</td><td>Khách được add admin để thao tác Ads</td></tr>
+            <tr><td>❓ Không rõ</td><td>Chưa xác định được</td></tr>
+            <tr><td>🚨 Nghi ngờ hacker</td><td>Admin lạ - <strong>ALERT BẢO MẬT!</strong></td></tr>
+        </table>
+
+        <h2>Các Case Đặc biệt</h2>
+
+        <h3>Case 1: BM Gốc + 0 Via live = FATAL</h3>
+        <blockquote class="danger">
+            <strong>💀 CẢNH BÁO NGHIÊM TRỌNG</strong><br><br>
+            BM GỐC KHÔNG CÒN VIA NÀO CẦM<br><br>
+            Tất cả Via có quyền truy cập BM này đã die.<br>
+            → Mất quyền truy cập BM VĨNH VIỄN<br>
+            → Tất cả Ads trong BM = MẤT TRẮNG<br><br>
+            ⚠️ KHÔNG THỂ KHÔI PHỤC
+        </blockquote>
+
+        <h3>Case 2: BM Trung gian + 0 Via live</h3>
+        <blockquote class="warning">
+            <strong>🔴 CẦN XỬ LÝ</strong><br><br>
+            BM Trung gian không còn Via nào cầm<br>
+            → Không thể check Ads qua BM này<br>
+            → Cần tạo BM Trung gian mới hoặc bổ sung Via<br><br>
+            💡 Ads vẫn an toàn vì BM Gốc còn sống
+        </blockquote>
+
+        <h2>So sánh Modal Ads vs Modal BM</h2>
+        <table>
+            <tr><th>Aspect</th><th>Modal Ads</th><th>Modal BM</th></tr>
+            <tr><td>Góc nhìn</td><td>Từ Ads nhìn lên</td><td>Từ BM nhìn xung quanh</td></tr>
+            <tr><td>Hiển thị BM</td><td>BM Gốc + BM Trung gian</td><td>Thông tin BM hiện tại</td></tr>
+            <tr><td>Hiển thị Via</td><td>Via nào reach được Ads</td><td>Via nào cầm BM</td></tr>
+            <tr><td>Hiển thị Ads</td><td>Không có</td><td>Số Ads owned/shared</td></tr>
+            <tr><td>Rủi ro chính</td><td>0 Via = không check được</td><td>0 Via = mất quyền truy cập</td></tr>
+        </table>
+
+        <h2>Demo</h2>
+        <p>👉 Chuyển sang tab <strong>Demo</strong> để xem giao diện tương tác.</p>
+        <p>Demo bao gồm:</p>
+        <ul>
+            <li>Bảng BM với cột Liên kết (badge Via + Ads)</li>
+            <li>Modal chi tiết cho BM Gốc và BM Trung gian</li>
+            <li><strong>Section Admin Matching</strong> với các trạng thái: Auto, Manual, Unmatched với gợi ý</li>
+            <li>6 case demo: Normal, Warning, Fatal, Critical, Die</li>
+        </ul>
+
+        <h2>Lịch sử</h2>
+        <table>
+            <tr><th>Ngày</th><th>Thay đổi</th></tr>
+            <tr><td>2026-01-16</td><td>Khởi tạo idea + demo HTML</td></tr>
+            <tr><td>2026-01-16</td><td>Tách cột: Via, Tổng Ads, Ads Gốc (live/die/nợ), Ads Share (live/die/nợ)</td></tr>
+            <tr><td>2026-01-16</td><td>Thêm section Admin Matching với gợi ý Via cho unmatched</td></tr>
+            <tr><td>2026-01-16</td><td>Gộp README vào Demo HTML (2-in-1 format)</td></tr>
+        </table>
+
+    </div>
+
+    <!-- ==================== DEMO CONTENT ==================== -->
+    <div id="content-demo" class="hidden">
+
+    <!-- Fake App Layout -->
+    <div class="flex h-screen bg-gray-100">
+
+        <!-- Sidebar -->
+        <div class="w-48 bg-[#1e2a4a] text-white flex flex-col">
+            <!-- Logo -->
+            <div class="p-4 border-b border-[#2a3a5a] flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center text-sm font-bold">N</div>
+                <span class="font-semibold text-sm">Nolimit</span>
+            </div>
+
+            <!-- Menu -->
+            <nav class="flex-1 p-2 text-sm">
+                <div class="px-3 py-2 text-gray-400 text-xs uppercase tracking-wider">Menu</div>
+                <a href="#" class="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-[#2a3a5a] rounded">
+                    <span>📊</span> Trang tổng quan
+                </a>
+                <a href="#" class="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-[#2a3a5a] rounded">
+                    <span>📁</span> Quản lý tài sản
+                </a>
+                <a href="#" class="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-[#2a3a5a] rounded ml-4 text-xs">
+                    Tài khoản Facebook
+                </a>
+                <a href="#" class="flex items-center gap-2 px-3 py-2 text-gray-300 hover:bg-[#2a3a5a] rounded ml-4 text-xs">
+                    Tài khoản quảng cáo
+                </a>
+                <a href="#" class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded ml-4 text-xs font-medium">
+                    Quản lý BM
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+            <!-- Top Header -->
+            <div class="bg-white border-b px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-lg font-semibold text-[#1e2a4a]">Trình quản lý BM theo Tag: <span class="text-blue-500">G-Nuôi</span></h1>
+                    <div class="flex items-center gap-3">
+                        <button class="p-2 hover:bg-gray-100 rounded"><span class="text-gray-400">🔔</span></button>
+                        <div class="w-8 h-8 bg-blue-500 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub Header - Tabs -->
+            <div class="bg-white border-b px-6">
+                <div class="flex items-center gap-4 py-3">
+                    <button class="px-4 py-1.5 bg-blue-500 text-white text-sm rounded-full">Theo Tag</button>
+                    <button class="px-4 py-1.5 text-gray-500 text-sm hover:bg-gray-100 rounded-full">Theo Nhóm</button>
+                    <button class="px-4 py-1.5 text-gray-500 text-sm hover:bg-gray-100 rounded-full">Theo VIA</button>
+                </div>
+            </div>
+
+            <!-- Content Tabs: Business Manager vs Liên kết BM -->
+            <div class="bg-white px-6 pt-4">
+                <div class="flex items-center gap-1 border-b">
+                    <button onclick="switchContentTab('bm-list')" id="tab-bm-list" class="flex items-center gap-2 px-4 py-2 text-gray-400 border-b-2 border-transparent hover:text-gray-600">
+                        <span class="text-blue-500">📋</span>
+                        <span class="text-sm">Business Manager</span>
+                    </button>
+                    <button onclick="switchContentTab('bm-link')" id="tab-bm-link" class="flex items-center gap-2 px-4 py-2 text-blue-600 border-b-2 border-blue-500 font-medium">
+                        <span class="text-blue-500">🔗</span>
+                        <span class="text-sm">Liên kết BM</span>
+                        <span class="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-600 rounded">NEW</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white px-6 py-3 flex items-center justify-between border-b">
+                <div class="flex items-center gap-3">
+                    <button class="flex items-center gap-2 px-3 py-1.5 border rounded-lg text-sm text-gray-600 hover:bg-gray-50">
+                        <span>🏷️</span> Lọc theo Tag
+                        <span class="text-green-500">●</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 hover:bg-gray-100 rounded text-gray-400">🔄</button>
+                    <button class="p-2 hover:bg-gray-100 rounded text-gray-400">🔍</button>
+                    <div class="relative">
+                        <input type="text" placeholder="Tìm kiếm" class="pl-3 pr-8 py-1.5 border rounded-lg text-sm w-48">
+                        <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Content -->
+            <div class="flex-1 overflow-auto p-6">
+
+                <!-- Tab: Business Manager (hidden by default) -->
+                <div id="content-bm-list" class="hidden">
+                    <div class="bg-white rounded-lg shadow text-sm text-gray-500 p-8 text-center">
+                        Đây là bảng Business Manager gốc (giống giao diện cũ)
+                    </div>
+                </div>
+
+                <!-- Tab: Liên kết BM (NEW - our table) -->
+                <div id="content-bm-link" class="bg-white rounded-lg shadow overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-600">
+                                    <input type="checkbox" class="rounded">
+                                </th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Tên BM</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Loại</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-600">
+                                    <div class="flex items-center justify-center gap-1">VIA sở hữu <span class="text-gray-400">▼</span></div>
+                                </th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-600">Admin</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-600">Trạng thái</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-600">TKQC Gốc</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-600">TKQC Share</th>
+                                <th class="px-4 py-3 text-center font-semibold text-gray-600"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <!-- Row 1: BM Gốc - Normal -->
+                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="openModal('bm-goc-normal')">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <span class="text-blue-600 text-xs">🏢</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900">Valor Capital Partners LLC</div>
+                                            <div class="text-xs text-gray-400">794401936508348</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded">G-Nuôi</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">3/4 🟢</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-blue-600">4 Người</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-green-500 font-medium">Active</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium">50</div>
+                                    <div class="text-xs text-gray-400">●45 ●3 ●2</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">5</div>
+                                    <div class="text-xs text-gray-400">●4 ●1 ●0</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: BM Trung gian -->
+                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="openModal('bm-tg-normal')">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                                            <span class="text-teal-600 text-xs">🔗</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900">BM Proxy Alpha</div>
+                                            <div class="text-xs text-gray-400">987654321098765</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium bg-teal-100 text-teal-700 rounded">🔗 TG</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">2/2 🟢</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-blue-600">4 Người</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-green-500 font-medium">Active</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">0</div>
+                                    <div class="text-xs text-gray-400">-</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium">120</div>
+                                    <div class="text-xs text-gray-400">●100 ●15 ●5</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3: Warning - 1 Via -->
+                            <tr class="hover:bg-yellow-50 bg-yellow-50/50 cursor-pointer" onclick="openModal('bm-goc-warning')">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                            <span class="text-yellow-600 text-xs">⚠️</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900">Chapman Glen Partners</div>
+                                            <div class="text-xs text-gray-400">578841175315581</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded">G-Nuôi</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full">1/3 🟡</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-blue-600">5 Người</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-green-500 font-medium">Active</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium">30</div>
+                                    <div class="text-xs text-gray-400">●25 ●3 ●2</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">0</div>
+                                    <div class="text-xs text-gray-400">-</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 4: Fatal - 0 Via -->
+                            <tr class="hover:bg-red-50 bg-red-50/50 cursor-pointer" onclick="openModal('bm-goc-fatal')">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                            <span class="text-red-600 text-xs">💀</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900">AGP Pine Bluff LLC</div>
+                                            <div class="text-xs text-gray-400">133878002123619</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded">G-Nuôi</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">0/2 🔴</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-gray-400">No Data</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-green-500 font-medium">Active</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium">25</div>
+                                    <div class="text-xs text-gray-400">●20 ●3 ●2</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">0</div>
+                                    <div class="text-xs text-gray-400">-</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 5: BM TG Critical -->
+                            <tr class="hover:bg-red-50 cursor-pointer" onclick="openModal('bm-tg-critical')">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                            <span class="text-orange-600 text-xs">🔗</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-900">BM Proxy Gamma</div>
+                                            <div class="text-xs text-gray-400">444555666777888</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium bg-teal-100 text-teal-700 rounded">🔗 TG</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">0/2 🔴</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-blue-600">3 Người</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-green-500 font-medium">Active</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">0</div>
+                                    <div class="text-xs text-gray-400">-</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium">80</div>
+                                    <div class="text-xs text-gray-400">●65 ●10 ●5</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 6: BM Die -->
+                            <tr class="hover:bg-gray-100 bg-gray-100/50 cursor-pointer opacity-60" onclick="openModal('bm-die')">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded"></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                                            <span class="text-gray-500 text-xs">💀</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-500 line-through">BM Root DEAD</div>
+                                            <div class="text-xs text-gray-400">999888777666555</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-500 rounded">G-Nuôi</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 text-xs font-medium bg-gray-200 text-gray-500 rounded-full">0/0</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-gray-400">-</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="text-red-400 font-medium">Die</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">40</div>
+                                    <div class="text-xs text-red-400">MẤT</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="font-medium text-gray-400">0</div>
+                                    <div class="text-xs text-gray-400">-</div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <button class="text-gray-400 hover:text-gray-600">⋮</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Table Footer -->
+                    <div class="px-4 py-3 border-t bg-gray-50 flex items-center justify-between text-sm">
+                        <div class="text-gray-500">
+                            Tổng: <span class="font-medium text-blue-600">6 BM</span>,
+                            <span class="font-medium">225 TKQC</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-gray-400">Page Size: 500</span>
+                            <span class="text-gray-500">1 to 6 of 6</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" onclick="closeModal()">
+        <div id="modal-content" class="bg-gray-50 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[95vh] overflow-hidden" onclick="event.stopPropagation()">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-4 bg-white border-b">
+                <div class="flex items-center gap-3">
+                    <div id="modal-icon" class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">Chi tiết Liên kết - <span id="modal-bm-name">BM Root ABC</span></h2>
+                        <div class="flex items-center gap-1.5 text-sm text-gray-500">
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                            <span>Hệ thống hoạt động</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </button>
+                    <button onclick="closeModal()" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div id="modal-body" class="p-6 overflow-y-auto custom-scroll max-h-[calc(95vh-180px)]">
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-white border-t flex items-center justify-between">
+                <div class="text-sm text-gray-500">Last updated: Just now</div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        Export
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                        Edit Structure
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div> <!-- Close demo content -->
+
+    <script>
+        const mockData = {
+            'bm-goc-normal': {
+                name: 'BM Root ABC',
+                type: 'root',
+                status: 'live',
+                id: '123456789',
+                hasToken: true,
+                createdAt: '2024-01-15',
+                createdBy: 'Via Admin',
+                stats: { totalVia: 4, livePercent: 75, totalAds: 50, totalAdmins: 5 },
+                vias: [
+                    { name: 'Via A', id: '100001234567', status: 'live', isWorker: true, tasks: 150 },
+                    { name: 'Via B', id: '100002345678', status: 'live', isWorker: false, tasks: 0 },
+                    { name: 'Via C', id: '100003456789', status: 'live', isWorker: true, tasks: 89 },
+                    { name: 'Via D', id: '100004567890', status: 'die', isWorker: false, diedAt: '2025-12-20' }
+                ],
+                admins: [
+                    { name: '1.12 XMDN 234567', email: 'via1@nolimit.com', matchStatus: 'auto', matchedVia: { id: '100001234567', name: 'Via A', status: 'live' } },
+                    { name: '1.12 XMDN 345678', email: 'via2@nolimit.com', matchStatus: 'auto', matchedVia: { id: '100002345678', name: 'Via B', status: 'live' } },
+                    { name: '1.12 XMDN 456789', email: 'via3@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100003456789', name: 'Via C', status: 'live' } },
+                    { name: '1.12 XMDN 567890', email: 'via4@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100004567890', name: 'Via D', status: 'die' } },
+                    { name: 'Nguyen Van Khach', email: 'khach@gmail.com', matchStatus: 'unmatched', digits: null, reason: 'Via của khách' }
+                ],
+                ads: {
+                    owned: 50,
+                    sharedTo: ['BM Proxy Alpha', 'BM Proxy Beta', 'BM Proxy Gamma'],
+                    byStatus: { active: 45, paused: 3, disabled: 2 }
+                },
+                risks: [
+                    { type: 'success', label: 'VIA CẦM BM', text: '3 Live (đủ backup)' },
+                    { type: 'success', label: 'ADS STATUS', text: '90% Active' },
+                    { type: 'warning', label: 'CẢNH BÁO', text: 'Via A là Worker, cầm BM Gốc trực tiếp' },
+                    { type: 'success', label: 'ADMIN MATCH', text: '4/5 matched, 1 khách' }
+                ]
+            },
+            'bm-tg-normal': {
+                name: 'BM Proxy Alpha',
+                type: 'proxy',
+                status: 'live',
+                id: '987654321',
+                hasToken: true,
+                stats: { totalVia: 2, livePercent: 100, totalAds: 120, totalAdmins: 4 },
+                vias: [
+                    { name: 'Via A', id: '100001234567', status: 'live', isWorker: true, tasks: 150 },
+                    { name: 'Via C', id: '100003456789', status: 'live', isWorker: true, tasks: 89 }
+                ],
+                admins: [
+                    { name: '1.12 XMDN 234567', email: 'via1@nolimit.com', matchStatus: 'auto', matchedVia: { id: '100001234567', name: 'Via A', status: 'live' } },
+                    { name: '1.12 XMDN 456789', email: 'via3@nolimit.com', matchStatus: 'auto', matchedVia: { id: '100003456789', name: 'Via C', status: 'live' } },
+                    { name: 'Khach A', email: 'khachA@company.com', matchStatus: 'unmatched', digits: null, reason: 'Via của khách' },
+                    { name: 'Khach B', email: 'khachB@company.com', matchStatus: 'unmatched', digits: null, reason: 'Via của khách' }
+                ],
+                adsFromRoots: [
+                    { bmName: 'BM Root ABC', count: 50 },
+                    { bmName: 'BM Root XYZ', count: 30 },
+                    { bmName: 'BM Root DEF', count: 25 },
+                    { bmName: 'BM Root GHI', count: 10 },
+                    { bmName: 'BM Root JKL', count: 5 }
+                ],
+                risks: [
+                    { type: 'success', label: 'VIA CẦM BM', text: '2 Live (đủ backup)' },
+                    { type: 'success', label: 'TOKEN', text: 'Có Token - sẵn sàng check' },
+                    { type: 'success', label: 'ADMIN MATCH', text: '2/4 matched, 2 khách (BM TG bình thường)' }
+                ]
+            },
+            'bm-goc-warning': {
+                name: 'BM Root DEF',
+                type: 'root',
+                status: 'live',
+                id: '111222333',
+                hasToken: false,
+                createdAt: '2023-06-10',
+                createdBy: 'Via Old',
+                stats: { totalVia: 3, livePercent: 33, totalAds: 30, totalAdmins: 5 },
+                vias: [
+                    { name: 'Via F', id: '100006666666', status: 'live', isWorker: false, tasks: 0 },
+                    { name: 'Via G', id: '100007777777', status: 'die', isWorker: false, diedAt: '2025-11-15' },
+                    { name: 'Via H', id: '100008888888', status: 'die', isWorker: false, diedAt: '2025-12-01' }
+                ],
+                admins: [
+                    { name: '1.12 XMDN 666666', email: 'via6@nolimit.com', matchStatus: 'auto', matchedVia: { id: '100006666666', name: 'Via F', status: 'live' } },
+                    { name: '1.12 XMDN 777777', email: 'via7@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100007777777', name: 'Via G', status: 'die' } },
+                    { name: '1.12 XMDN 888888', email: 'via8@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100008888888', name: 'Via H', status: 'die' } },
+                    {
+                        name: '1.12 XMDN 30333',
+                        email: 'via9@nolimit.com',
+                        matchStatus: 'unmatched',
+                        digits: '30333',
+                        suggestions: [
+                            { id: '100001230333', name: 'Via M', status: 'live', needSync: true },
+                            { id: '100009930333', name: 'Via N', status: 'die', diedAt: '2025-12-20' }
+                        ]
+                    },
+                    { name: 'Admin Lạ XYZ', email: 'stranger@unknown.com', matchStatus: 'unmatched', digits: null, reason: null }
+                ],
+                ads: {
+                    owned: 30,
+                    sharedTo: ['BM Proxy Alpha'],
+                    byStatus: { active: 25, paused: 3, disabled: 2 }
+                },
+                risks: [
+                    { type: 'warning', label: 'VIA CẦM BM', text: 'Chỉ 1 Live - RỦI RO CAO' },
+                    { type: 'warning', label: 'ĐỀ XUẤT', text: 'Cần bổ sung Via backup NGAY' },
+                    { type: 'warning', label: 'ADMIN MATCH', text: '3/5 matched, 2 cần review' },
+                    { type: 'error', label: 'CẢNH BÁO', text: '1 admin lạ chưa xác định' }
+                ]
+            },
+            'bm-goc-fatal': {
+                name: 'BM Root OLD',
+                type: 'root',
+                status: 'live',
+                id: '555666777',
+                hasToken: false,
+                createdAt: '2022-03-15',
+                createdBy: 'Via Legacy',
+                stats: { totalVia: 2, livePercent: 0, totalAds: 25, totalAdmins: 2 },
+                vias: [
+                    { name: 'Via I', id: '100009999999', status: 'die', isWorker: false, diedAt: '2025-12-20' },
+                    { name: 'Via J', id: '100008888888', status: 'die', isWorker: false, diedAt: '2025-12-25' }
+                ],
+                admins: [
+                    { name: '1.12 XMDN 999999', email: 'via9@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100009999999', name: 'Via I', status: 'die' } },
+                    { name: '1.12 XMDN 888888', email: 'via8@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100008888888', name: 'Via J', status: 'die' } }
+                ],
+                ads: {
+                    owned: 25,
+                    sharedTo: [],
+                    byStatus: { active: 20, paused: 3, disabled: 2 }
+                },
+                risks: [
+                    { type: 'fatal', label: '💀 FATAL', text: 'BM GỐC KHÔNG CÒN VIA NÀO CẦM' },
+                    { type: 'error', label: 'HẬU QUẢ', text: 'Mất quyền truy cập BM VĨNH VIỄN' },
+                    { type: 'error', label: 'THIỆT HẠI', text: '25 Ads = MẤT TRẮNG' },
+                    { type: 'error', label: 'KHÔI PHỤC', text: 'KHÔNG THỂ khôi phục' }
+                ]
+            },
+            'bm-tg-critical': {
+                name: 'BM Proxy Gamma',
+                type: 'proxy',
+                status: 'live',
+                id: '444555666',
+                hasToken: true,
+                stats: { totalVia: 2, livePercent: 0, totalAds: 80, totalAdmins: 3 },
+                vias: [
+                    { name: 'Via K', id: '100001111111', status: 'die', isWorker: true, diedAt: '2025-12-18' },
+                    { name: 'Via L', id: '100002222222', status: 'die', isWorker: false, diedAt: '2025-12-22' }
+                ],
+                admins: [
+                    { name: '1.12 XMDN 111111', email: 'via11@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100001111111', name: 'Via K', status: 'die' } },
+                    { name: '1.12 XMDN 222222', email: 'via22@nolimit.com', matchStatus: 'manual', matchedVia: { id: '100002222222', name: 'Via L', status: 'die' } },
+                    { name: 'Khach C', email: 'khachC@company.com', matchStatus: 'unmatched', digits: null, reason: 'Via của khách' }
+                ],
+                adsFromRoots: [
+                    { bmName: 'BM Root ABC', count: 50 },
+                    { bmName: 'BM Root XYZ', count: 30 }
+                ],
+                risks: [
+                    { type: 'error', label: 'VIA CẦM BM', text: '0 Live - KHÔNG THỂ CHECK' },
+                    { type: 'warning', label: 'ĐỀ XUẤT', text: 'Bổ sung Via mới hoặc tạo BM TG khác' },
+                    { type: 'success', label: 'AN TÂM', text: 'Ads vẫn an toàn (BM Gốc còn sống)' }
+                ]
+            },
+            'bm-die': {
+                name: 'BM Root DEAD',
+                type: 'root',
+                status: 'die',
+                id: '999888777',
+                diedAt: '2025-12-25',
+                stats: { totalVia: 0, livePercent: 0, totalAds: 40, totalAdmins: 0 },
+                vias: [],
+                admins: [],
+                ads: { owned: 40, sharedTo: [], byStatus: { active: 0, paused: 0, disabled: 40 } },
+                risks: [
+                    { type: 'fatal', label: '💀 GAME OVER', text: 'BM ĐÃ CHẾT' },
+                    { type: 'error', label: 'THIỆT HẠI', text: '40 Ads = MẤT TRẮNG' },
+                    { type: 'error', label: 'KHÔI PHỤC', text: 'KHÔNG THỂ khôi phục' }
+                ]
+            }
+        };
+
+        function openModal(type) {
+            const data = mockData[type];
+            const overlay = document.getElementById('modal-overlay');
+            const body = document.getElementById('modal-body');
+
+            document.getElementById('modal-bm-name').textContent = data.name;
+
+            let html = '';
+
+            // Summary Cards
+            html += `
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">TỔNG VIA</div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-3xl font-bold text-gray-800">${String(data.stats.totalVia).padStart(2, '0')}</span>
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">TỶ LỆ VIA LIVE</div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-3xl font-bold ${data.stats.livePercent >= 50 ? 'text-green-600' : data.stats.livePercent > 0 ? 'text-yellow-600' : 'text-red-600'}">${data.stats.livePercent}%</span>
+                        <div class="w-10 h-10 ${data.stats.livePercent >= 50 ? 'bg-green-100' : data.stats.livePercent > 0 ? 'bg-yellow-100' : 'bg-red-100'} rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 ${data.stats.livePercent >= 50 ? 'text-green-600' : data.stats.livePercent > 0 ? 'text-yellow-600' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                    <div class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">TỔNG ADS</div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-3xl font-bold text-blue-600">${data.stats.totalAds}</span>
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+            // BM Info Section
+            const isRoot = data.type === 'root';
+            const isDie = data.status === 'die';
+            const tagColor = isRoot ? 'indigo' : 'teal';
+            const tagText = isRoot ? 'Quan trọng' : 'Trung gian';
+            const typeIcon = isRoot ? '🏠' : '🔗';
+            const typeText = isRoot ? 'BM GỐC (Owner)' : 'BM TRUNG GIAN (Proxy)';
+
+            html += `
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-${tagColor}-100 rounded flex items-center justify-center text-sm">${typeIcon}</div>
+                        <span class="text-sm font-semibold text-${tagColor}-700">THÔNG TIN BM</span>
+                    </div>
+                    <span class="px-3 py-1 text-xs font-medium bg-${tagColor}-100 text-${tagColor}-700 rounded-full">${tagText}</span>
+                </div>`;
+
+            if (isDie) {
+                html += `
+                <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-red-200 rounded-xl flex items-center justify-center text-2xl">💀</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-red-800">${data.name}</span>
+                                <span class="px-2 py-0.5 text-xs font-medium bg-red-600 text-white rounded">Die</span>
+                            </div>
+                            <div class="text-sm text-red-600 mt-1">
+                                <span class="font-medium">GAME OVER</span> - Died: ${data.diedAt}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            } else {
+                html += `
+                <div class="bg-${tagColor}-50 border border-${tagColor}-200 rounded-xl p-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-${tagColor}-200 rounded-xl flex items-center justify-center text-${tagColor}-700 font-bold text-lg">
+                            ${data.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-gray-800">${data.name}</span>
+                                <span class="px-2 py-0.5 text-xs font-medium bg-green-500 text-white rounded flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 bg-white rounded-full"></span> Live
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-500 mt-1">ID: ${data.id}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 mt-3 pt-3 border-t border-${tagColor}-200 text-sm text-gray-600 flex-wrap">
+                        <span>📋 Type: <strong>${typeText}</strong></span>
+                        ${data.hasToken ? '<span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">✅ Có Token</span>' : '<span class="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">❌ Không Token</span>'}
+                        ${data.createdAt ? `<span>📅 ${data.createdAt}</span>` : ''}
+                        ${data.createdBy ? `<span>👤 ${data.createdBy}</span>` : ''}
+                    </div>
+                </div>`;
+            }
+            html += '</div>';
+
+            // Two columns: Via + Ads
+            const liveVias = data.vias.filter(v => v.status === 'live').length;
+            const totalVias = data.vias.length;
+
+            html += '<div class="grid grid-cols-2 gap-4 mb-6">';
+
+            // Via Column
+            html += `
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-orange-100 rounded flex items-center justify-center">
+                            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-700">VIA CẦM BM</span>
+                    </div>
+                    <span class="px-2 py-1 text-xs font-medium ${liveVias >= 2 ? 'bg-green-100 text-green-700' : liveVias === 1 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'} rounded">
+                        ${liveVias} Live / ${totalVias} Total
+                    </span>
+                </div>
+                <div class="space-y-2 max-h-48 overflow-y-auto custom-scroll">`;
+
+            if (data.vias.length === 0) {
+                html += '<div class="text-center text-gray-400 py-4">Không có Via nào</div>';
+            } else {
+                data.vias.forEach(via => {
+                    const isLive = via.status === 'live';
+                    html += `
+                    <div class="flex items-center justify-between p-3 ${isLive ? 'bg-gray-50' : 'bg-red-50 opacity-60'} rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 ${isLive ? 'bg-green-500' : 'bg-red-400'} rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                ${via.name.split(' ')[1] || via.name.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium ${isLive ? 'text-gray-800' : 'text-gray-500'}">${via.name}</span>
+                                    ${via.isWorker ? '<span class="text-xs text-green-600 font-medium">WORKER</span>' : ''}
+                                </div>
+                                ${isLive && via.isWorker ? `<div class="text-xs text-gray-400">Tasks: ${via.tasks}</div>` : ''}
+                                ${!isLive ? `<div class="text-xs text-red-500">Died: ${via.diedAt}</div>` : ''}
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 text-xs font-medium ${isLive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} rounded">${isLive ? 'Live' : 'Die'}</span>
+                    </div>`;
+                });
+            }
+
+            html += '</div></div>';
+
+            // Ads Column
+            html += `
+            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-700">${isRoot ? 'ADS TRONG BM' : 'ADS ĐƯỢC SHARE'}</span>
+                    </div>
+                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded">
+                        ${data.stats.totalAds} ${isRoot ? 'Owned' : 'Shared'}
+                    </span>
+                </div>
+                <div class="space-y-3">`;
+
+            if (isRoot && data.ads) {
+                html += `
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Owned:</span>
+                        <span class="font-medium">${data.ads.owned} ads</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Shared to:</span>
+                        <span class="font-medium">${data.ads.sharedTo.length} BM TG</span>
+                    </div>
+                    <div class="border-t pt-3 mt-3">
+                        <div class="text-xs text-gray-500 mb-2">Breakdown by status:</div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-sm">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> Active</span>
+                                <span class="font-medium">${data.ads.byStatus.active}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 bg-yellow-500 rounded-full"></span> Paused</span>
+                                <span class="font-medium">${data.ads.byStatus.paused}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 bg-gray-400 rounded-full"></span> Disabled</span>
+                                <span class="font-medium">${data.ads.byStatus.disabled}</span>
+                            </div>
+                        </div>
+                    </div>`;
+
+                if (data.ads.sharedTo.length > 0) {
+                    html += `
+                    <div class="border-t pt-3 mt-3">
+                        <div class="text-xs text-gray-500 mb-2">Shared đến:</div>
+                        <div class="flex flex-wrap gap-1">
+                            ${data.ads.sharedTo.map(bm => `<span class="px-2 py-0.5 text-xs bg-teal-100 text-teal-700 rounded">${bm}</span>`).join('')}
+                        </div>
+                    </div>`;
+                }
+            } else if (data.adsFromRoots) {
+                html += `<div class="text-xs text-gray-500 mb-2">Ads từ các BM Gốc:</div>`;
+                data.adsFromRoots.forEach(root => {
+                    html += `
+                    <div class="flex justify-between text-sm p-2 bg-gray-50 rounded">
+                        <span class="text-gray-600">${root.bmName}</span>
+                        <span class="font-medium">${root.count} ads</span>
+                    </div>`;
+                });
+            }
+
+            html += '</div></div></div>';
+
+            // Admin Matching Section
+            if (data.admins && data.admins.length > 0) {
+                const matchedCount = data.admins.filter(a => a.matchStatus === 'auto' || a.matchStatus === 'manual').length;
+                const unmatchedCount = data.admins.filter(a => a.matchStatus === 'unmatched').length;
+                const hasUnmatchedWarning = data.admins.some(a => a.matchStatus === 'unmatched' && !a.reason);
+
+                html += `
+                <div class="bg-white rounded-xl border ${hasUnmatchedWarning ? 'border-yellow-300 bg-yellow-50/30' : 'border-gray-200'} p-4 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-700">ADMIN MATCHING</span>
+                            ${hasUnmatchedWarning ? '<span class="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-700 rounded animate-pulse">⚠️ Cần review</span>' : ''}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded">${matchedCount} matched</span>
+                            ${unmatchedCount > 0 ? `<span class="px-2 py-1 text-xs font-medium ${hasUnmatchedWarning ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'} rounded">${unmatchedCount} unmatched</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="space-y-2 max-h-64 overflow-y-auto custom-scroll">`;
+
+                data.admins.forEach(admin => {
+                    if (admin.matchStatus === 'auto') {
+                        // Auto-matched
+                        html += `
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✓</div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">${admin.name}</div>
+                                    <div class="text-xs text-gray-500">${admin.email}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-400">→</span>
+                                <div class="px-2 py-1 rounded ${admin.matchedVia.status === 'live' ? 'bg-green-100' : 'bg-red-100'}">
+                                    <span class="text-xs font-medium ${admin.matchedVia.status === 'live' ? 'text-green-700' : 'text-red-700'}">${admin.matchedVia.name}</span>
+                                    <span class="text-xs ${admin.matchedVia.status === 'live' ? 'text-green-600' : 'text-red-600'}">${admin.matchedVia.status === 'live' ? '🟢' : '💀'}</span>
+                                </div>
+                                <span class="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded">Auto</span>
+                            </div>
+                        </div>`;
+                    } else if (admin.matchStatus === 'manual') {
+                        // Manual-matched
+                        html += `
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">🔗</div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800">${admin.name}</div>
+                                    <div class="text-xs text-gray-500">${admin.email}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-400">→</span>
+                                <div class="px-2 py-1 rounded ${admin.matchedVia.status === 'live' ? 'bg-green-100' : 'bg-red-100'}">
+                                    <span class="text-xs font-medium ${admin.matchedVia.status === 'live' ? 'text-green-700' : 'text-red-700'}">${admin.matchedVia.name}</span>
+                                    <span class="text-xs ${admin.matchedVia.status === 'live' ? 'text-green-600' : 'text-red-600'}">${admin.matchedVia.status === 'live' ? '🟢' : '💀'}</span>
+                                </div>
+                                <span class="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Thủ công</span>
+                            </div>
+                        </div>`;
+                    } else if (admin.matchStatus === 'unmatched') {
+                        if (admin.reason) {
+                            // Unmatched with reason (confirmed)
+                            html += `
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-xs">👤</div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-800">${admin.name}</div>
+                                        <div class="text-xs text-gray-500">${admin.email}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">${admin.reason}</span>
+                                </div>
+                            </div>`;
+                        } else if (admin.suggestions && admin.suggestions.length > 0) {
+                            // Unmatched with suggestions
+                            html += `
+                            <div class="p-3 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold">?</div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-800">${admin.name}</div>
+                                            <div class="text-xs text-gray-500">${admin.email}</div>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded font-medium">🔍 Phát hiện: ${admin.digits}</span>
+                                </div>
+                                <div class="ml-11 space-y-2">
+                                    <div class="text-xs text-gray-500 font-medium">📋 Gợi ý Via có đuôi khớp:</div>
+                                    ${admin.suggestions.map(s => `
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border ${s.status === 'live' ? 'border-green-200' : 'border-red-200'}">
+                                        <div class="flex items-center gap-2">
+                                            <span class="${s.status === 'live' ? 'text-green-600' : 'text-red-600'}">${s.status === 'live' ? '🟢' : '💀'}</span>
+                                            <span class="text-sm font-mono">${s.id}</span>
+                                            <span class="text-xs text-gray-500">- ${s.name}</span>
+                                            ${s.status === 'die' ? `<span class="text-xs text-red-500">(Die: ${s.diedAt})</span>` : ''}
+                                        </div>
+                                        <button class="px-2 py-1 text-xs ${s.status === 'live' ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded">
+                                            ${s.status === 'live' ? (s.needSync ? 'Đồng bộ' : 'Link') : 'Gắn thủ công'}
+                                        </button>
+                                    </div>
+                                    `).join('')}
+                                    <button class="w-full mt-2 px-3 py-1.5 text-xs text-gray-600 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300">
+                                        Không phải Via nào ở trên? Chọn lý do khác ▼
+                                    </button>
+                                </div>
+                            </div>`;
+                        } else {
+                            // Unmatched without digits - need to choose reason
+                            html += `
+                            <div class="p-3 bg-red-50 rounded-lg border-2 border-red-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">!</div>
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-800">${admin.name}</div>
+                                            <div class="text-xs text-gray-500">${admin.email}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-red-600 font-medium">⚠️ Admin lạ</span>
+                                        <select class="px-2 py-1 text-xs border border-red-300 rounded bg-white">
+                                            <option value="">Chọn lý do...</option>
+                                            <option value="via_lost">📦 Via thất lạc</option>
+                                            <option value="not_synced">🔄 Chưa đồng bộ</option>
+                                            <option value="customer">👤 Via của khách</option>
+                                            <option value="unknown">❓ Không rõ</option>
+                                            <option value="hacker">🚨 Nghi ngờ hacker</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }
+                    }
+                });
+
+                html += '</div></div>';
+            }
+
+            // Risk Summary
+            html += `
+            <div class="bg-slate-800 rounded-xl p-5 relative overflow-hidden">
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-10">
+                    <svg class="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-white font-semibold">Phân Tích & Tóm Tắt Rủi Ro</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 relative z-10">`;
+
+            data.risks.forEach(risk => {
+                let iconBg = 'bg-green-500';
+                let icon = '✓';
+                if (risk.type === 'warning') {
+                    iconBg = 'bg-yellow-500';
+                    icon = '!';
+                } else if (risk.type === 'error' || risk.type === 'fatal') {
+                    iconBg = 'bg-red-500';
+                    icon = '✕';
+                }
+
+                html += `
+                <div class="flex items-start gap-3">
+                    <div class="w-5 h-5 ${iconBg} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">${icon}</div>
+                    <div>
+                        <div class="text-xs text-gray-400 uppercase">${risk.label}</div>
+                        <div class="text-sm ${risk.type === 'fatal' ? 'text-red-400 font-bold' : risk.type === 'error' ? 'text-red-400' : risk.type === 'warning' ? 'text-yellow-400' : 'text-green-400'}">${risk.text}</div>
+                    </div>
+                </div>`;
+            });
+
+            html += '</div></div>';
+
+            body.innerHTML = html;
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modal-overlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Content Tab switching (Business Manager vs Liên kết BM)
+        function switchContentTab(tab) {
+            const bmListContent = document.getElementById('content-bm-list');
+            const bmLinkContent = document.getElementById('content-bm-link');
+            const tabBmList = document.getElementById('tab-bm-list');
+            const tabBmLink = document.getElementById('tab-bm-link');
+
+            if (tab === 'bm-list') {
+                bmListContent.classList.remove('hidden');
+                bmLinkContent.classList.add('hidden');
+                tabBmList.classList.add('text-blue-600', 'border-blue-500', 'font-medium');
+                tabBmList.classList.remove('text-gray-400', 'border-transparent');
+                tabBmLink.classList.remove('text-blue-600', 'border-blue-500', 'font-medium');
+                tabBmLink.classList.add('text-gray-400', 'border-transparent');
+            } else {
+                bmListContent.classList.add('hidden');
+                bmLinkContent.classList.remove('hidden');
+                tabBmLink.classList.add('text-blue-600', 'border-blue-500', 'font-medium');
+                tabBmLink.classList.remove('text-gray-400', 'border-transparent');
+                tabBmList.classList.remove('text-blue-600', 'border-blue-500', 'font-medium');
+                tabBmList.classList.add('text-gray-400', 'border-transparent');
+            }
+        }
+
+        // Main Tab switching (Docs vs Demo)
+        function switchTab(tab) {
+            const docsContent = document.getElementById('content-docs');
+            const demoContent = document.getElementById('content-demo');
+            const tabDocs = document.getElementById('tab-docs');
+            const tabDemo = document.getElementById('tab-demo');
+
+            if (tab === 'docs') {
+                docsContent.classList.remove('hidden');
+                demoContent.classList.add('hidden');
+                tabDocs.classList.add('bg-white', 'shadow', 'text-indigo-600');
+                tabDocs.classList.remove('text-gray-600');
+                tabDemo.classList.remove('bg-white', 'shadow', 'text-indigo-600');
+                tabDemo.classList.add('text-gray-600');
+            } else {
+                docsContent.classList.add('hidden');
+                demoContent.classList.remove('hidden');
+                tabDemo.classList.add('bg-white', 'shadow', 'text-indigo-600');
+                tabDemo.classList.remove('text-gray-600');
+                tabDocs.classList.remove('bg-white', 'shadow', 'text-indigo-600');
+                tabDocs.classList.add('text-gray-600');
+            }
+        }
+
+        // Check URL hash on load
+        if (window.location.hash === '#demo') {
+            switchTab('demo');
+        }
+    </script>
+</body>
+</html>

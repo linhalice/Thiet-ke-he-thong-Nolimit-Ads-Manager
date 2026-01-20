@@ -7,10 +7,24 @@
 
 ## 1. Team
 
+### Vận hành tài liệu này
+
 | Thành viên | Vai trò | Mô tả |
 |------------|---------|-------|
-| **Anh Sơn** | CTO | Người sáng lập, định hướng chiến lược, quyết định cuối cùng |
-| **Claude** | AI Co-founder | Cố vấn kỹ thuật, đồng hành xây dựng, chủ động đưa ý kiến và phản biện khi cần |
+| **Sơn** | CTO, Co-founder | Định hướng, quyết định, xây dựng hệ thống |
+| **Claude** | AI Partner | Cố vấn kỹ thuật, đồng hành xây dựng, phản biện khi cần |
+
+> Sơn và Claude là 2 người trực tiếp làm việc, đọc/viết tài liệu trong dự án này.
+
+### Founders khác (được nhắc tới)
+
+| Tên | Mô tả |
+|-----|-------|
+| **Trung lớn** | Anh Trung (85), quản lý tài sản công ty |
+| **Trung bé** | Bạn Sơn (98), input nghiệp vụ, user chính |
+| **Tiến** | (98), input nghiệp vụ, user chính |
+
+> 3 founders này đóng góp input và sử dụng hệ thống, nhưng không trực tiếp đọc/vận hành tài liệu.
 
 ---
 
@@ -67,17 +81,19 @@ Thư mục này **KHÔNG phải là nơi code production**. Đây là:
 ```
 📁 0_ Kế hoạch xây dựng Nolimit/
 │
-├── 📁 docs/                  # Tài liệu nền tảng
+├── 📁 docs/                  # Tài liệu nền tảng (3 files)
 │   ├── ABOUT.md              # Chúng ta là ai, quy ước làm việc
 │   ├── SYSTEM.md             # Kiến trúc kỹ thuật (cho dev)
-│   ├── KNOWLEDGE.md          # Kiến thức nghiệp vụ (cho vận hành)
-│   └── DECISIONS.md          # Log các quyết định quan trọng
+│   └── KNOWLEDGE.md          # Kiến thức nghiệp vụ (cho vận hành)
 │
-├── 📁 ideas/                 # Ý tưởng, thiết kế tính năng mới
+├── 📁 ideas/                 # Ý tưởng, thiết kế tính năng mới (đang thiết kế)
 │   ├── README.md
 │   └── 📁 YYYY-MM-DD-ten-y-tuong/
 │       ├── README.md         # Mô tả ý tưởng
 │       └── 📁 demo/          # Code demo (HTML/CSS/Vue)
+│
+├── 📁 done/                  # Ideas đã hoàn thành, đã chuyển cho dev
+│   └── 📁 YYYY-MM-DD-ten-y-tuong/
 │
 └── 📁 issues/                # Vấn đề cần giải quyết
     ├── README.md
@@ -89,13 +105,12 @@ Thư mục này **KHÔNG phải là nơi code production**. Đây là:
 | File | Dành cho | Nội dung |
 |------|----------|----------|
 | **ABOUT.md** | Tất cả | Team, công ty, quy ước làm việc |
-| **SYSTEM.md** | Dev team | Kiến trúc kỹ thuật, flow, thuật toán |
-| **KNOWLEDGE.md** | Team vận hành | Nghiệp vụ, rủi ro, nguyên tắc an toàn |
-| **DECISIONS.md** | Tất cả | Lý do đằng sau các quyết định |
+| **SYSTEM.md** | Tất cả  | Kiến trúc kỹ thuật, flow, thuật toán |
+| **KNOWLEDGE.md** | Tất cả  | Nghiệp vụ, rủi ro, nguyên tắc an toàn |
 
 **Quan trọng:**
 - Mỗi **idea** là **1 thư mục** (vì có code demo đi kèm)
-- Mỗi **issue** là **1 file** markdown
+- Mỗi **issue** là  **1 thư mục** (vì có code demo đi kèm)
 
 ---
 
@@ -133,8 +148,22 @@ Thư mục này **KHÔNG phải là nơi code production**. Đây là:
 - Claude xưng: **Tôi/Mình**
 
 ### Team
-- Có team dev riêng, làm việc độc lập
-- Anh Sơn và Claude tập trung vào vai trò BA/PO
+- **Team Dev**: Làm việc độc lập, nhận specs từ Anh Sơn + Claude
+- **Anh Sơn + Claude**: Vai trò BA/PO, thiết kế hệ thống
+- **Đội Tài nguyên** (hay gọi: đội Support, đội Vận hành):
+  - Trước đây: Quản lý tài nguyên thủ công bằng Google Sheets
+  - Hiện tại: Hỗ trợ xây dựng hệ thống, cung cấp input nghiệp vụ
+  - Sau này: Người dùng chính của hệ thống
+
+### Format Ideas (2-in-1)
+Mỗi idea dùng **1 file HTML duy nhất** chứa cả:
+- **Tab Docs**: Thiết kế chi tiết, specs, API
+- **Tab Demo**: Giao diện tương tác
+
+**Lý do:**
+- 1 file = 1 source of truth, không bị out-of-sync
+- Demo đẹp hơn README thuần text
+- Dễ share: gửi 1 file HTML là đủ
 
 ---
 
@@ -146,6 +175,9 @@ Thư mục này **KHÔNG phải là nơi code production**. Đây là:
 | 2026-01-15 | Bổ sung tư duy làm việc của Claude: Brainstorm, Micro-innovation |
 | 2026-01-15 | Bổ sung cấu trúc thư mục (ideas là thư mục, issues là file) |
 | 2026-01-16 | Chuyển docs vào thư mục docs/, phân định SYSTEM vs KNOWLEDGE |
+| 2026-01-16 | Thêm thư mục done/ cho ideas đã hoàn thành |
+| 2026-01-16 | Gộp DECISIONS.md vào ABOUT (giảm từ 4 xuống 3 docs) |
+| 2026-01-16 | Thêm quy tắc Format Ideas 2-in-1 |
 
 ---
 
